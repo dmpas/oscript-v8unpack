@@ -84,7 +84,7 @@ namespace v8unpack
 				var elemenSize = 4 + 4 + 4;
 
 				var result = new List<ElementAddress>();
-				for (var offset = 0; offset + elemenSize < buf.Length; offset += elemenSize)
+				for (var offset = 0; offset + elemenSize <= buf.Length; offset += elemenSize)
 				{
 					var headerAddress = BitConverter.ToUInt32(buf, offset);
 					var dataAddress = BitConverter.ToUInt32(buf, offset + 4);
