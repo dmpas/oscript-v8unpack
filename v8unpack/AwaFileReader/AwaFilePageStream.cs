@@ -42,6 +42,7 @@ namespace v8unpack
 			if (_currentPageIndex + 1 >= _pages.Length)
 			{
 				_currentPageData = null;
+				_currentPageOffset = 0;
 				return;
 			}
 			++_currentPageIndex;
@@ -52,7 +53,7 @@ namespace v8unpack
 			var _currentDataSize = Math.Min(_pageSize, _dataLeft);
 			_currentPageData = new byte[_currentDataSize];
 			_reader.Read(_currentPageData, 0, _currentPageData.Length);
-			_currentPageIndex = 0;
+			_currentPageOffset = 0;
 
 			_dataLeft -= _currentDataSize;
 		}
@@ -136,6 +137,7 @@ namespace v8unpack
 					{
 						break;
 					}
+					leftInPage = _currentPageData.Length - _currentPageOffset;
 				}
 
 				var readFromCurrentPage = Math.Min(leftInPage, countLeft);

@@ -45,12 +45,19 @@ namespace v8unpack
 			foreach (var fileIndex in _rootObject.FileIndexes)
 			{
 				var fileOffset = fileIndex * _pageSize;
-				_reader.Seek(fileOffset, SeekOrigin.Begin);
 
-				using (var currentObjectReader = _objectReader.OpenObjectStream(_reader))
+				try
 				{
-					var awaObject = new AwaObject(currentObjectReader.Length, fileIndex);
-					objects.Add(awaObject);
+					_reader.Seek(fileOffset, SeekOrigin.Begin);
+					using (var currentObjectReader = _objectReader.OpenObjectStream(_reader))
+					{
+						var awaObject = new AwaObject(currentObjectReader.Length, fileIndex);
+						objects.Add(awaObject);
+					}
+				}
+				catch
+				{
+					objects.Add(null); // TODO: Обозначать побитые объекты
 				}
 			}
 
@@ -66,7 +73,7 @@ namespace v8unpack
 
 			if (pageSize > page0.Length)
 			{
-				_reader.Seek(pageSize - page0.Length, SeekOrigin.Current);
+				_reader.Seek(pageSize, SeekOrigin.Begin);
 			}
 
 			_reader.Seek(2 * pageSize, SeekOrigin.Begin);
@@ -128,6 +135,10 @@ namespace v8unpack
 			var index = 0;
 			foreach (var element in Elements)
 			{
+				if (element == null)
+				{
+					continue;
+				}
 				var filename = Path.Combine(dirname, string.Format("{0}.header", index));
 				Extract(element, filename);
 				++index;

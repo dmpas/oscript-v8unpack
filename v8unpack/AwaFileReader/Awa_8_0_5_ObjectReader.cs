@@ -30,7 +30,7 @@ namespace v8unpack
 			var fullPageList = new List<int>();
 			for (int i = 0; i < pagesCount; i++)
 			{
-				var pageIndex = BitConverter.ToInt32(buf, offset);
+				var pageIndex = BitConverter.ToInt32(buf, offset + 4*i);
 				if (pageIndex > 0)
 				{
 					var pageOffset = pageIndex * _pageSize;
@@ -39,10 +39,11 @@ namespace v8unpack
 					reader.Read(allocationBuf, 0, allocationBuf.Length);
 
 					var numBlocks = BitConverter.ToInt32(allocationBuf, 0);
+					var offset2 = 4;
 					var pagesCount2 = 1023;
 					for (int j = 0; j < pagesCount2; j++)
 					{
-						var dataPageIndex = BitConverter.ToInt32(allocationBuf, 4 + 4 * j);
+						var dataPageIndex = BitConverter.ToInt32(allocationBuf, offset2 + 4 * j);
 						if (dataPageIndex != 0)
 						{
 							fullPageList.Add(dataPageIndex);
@@ -50,7 +51,6 @@ namespace v8unpack
 					}
 				}
 
-				offset += 4;
 			}
 			var pages = fullPageList.ToArray();
 			return new AwaFilePageStream(reader, dataSize, _pageSize, pages);

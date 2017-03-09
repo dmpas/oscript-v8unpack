@@ -1,4 +1,5 @@
 ﻿using System;
+using ScriptEngine.Machine;
 using ScriptEngine.HostedScript;
 using ScriptEngine.HostedScript.Library;
 
@@ -27,11 +28,6 @@ namespace TestApp
 	КонецЦикла;
 
 КонецЕсли;
-
-// Отладочный скрипт
-Чтение = Новый ЧтениеАваФайла(""C:\1C\Rep\RetailSquished\1cv8ddb.1CD"");
-Сообщить(""Всего: "" + Чтение.Элементы.Количество());
-Чтение.ИзвлечьВсе(""C:\Temp\awa"");
 "
 			;
 
@@ -54,6 +50,12 @@ namespace TestApp
 			var result = process.Start();
 
 			Console.WriteLine("Result = {0}", result);
+
+			var fileName = @"D:\1C\Retail\RetailSmall4\1Cv8.1CD";
+			using (var Reader = v8unpack.AwaFileReader.Constructor(ValueFactory.Create(fileName)) as v8unpack.AwaFileReader)
+			{
+				Reader.ExtractAll(@"C:\Temp\awa");
+			}
 		}
 
 		private string[] args;

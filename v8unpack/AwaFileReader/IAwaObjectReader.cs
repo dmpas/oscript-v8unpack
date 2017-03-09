@@ -16,8 +16,6 @@ namespace v8unpack
 	/// </summary>
 	public interface IAwaObjectReader
 	{
-		// AwaFileFormat.ObjectHeader ReadObject(Stream reader);
-
 		Stream OpenObjectStream(Stream reader);
 		AwaFileFormat.RootObjectHeader ReadRootObject(Stream reader);
 	}
