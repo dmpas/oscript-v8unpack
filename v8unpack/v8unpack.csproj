@@ -45,12 +45,23 @@
     <Compile Include="FileFormat\FileFormat.cs" />
     <Compile Include="FileFormat\BlockReaderStream.cs" />
     <Compile Include="FileFormat\File8FormatException.cs" />
+    <Compile Include="AwaFileReader\AwaFileReader.cs" />
+    <Compile Include="FileFormat\AwaFileFormat.cs" />
+    <Compile Include="AwaFileReader\IAwaObjectReader.cs" />
+    <Compile Include="AwaFileReader\Awa_8_3_8_ObjectReader.cs" />
+    <Compile Include="AwaFileReader\Awa_8_2_14_ObjectReader.cs" />
+    <Compile Include="AwaFileReader\Awa_8_0_5_ObjectReader.cs" />
+    <Compile Include="AwaFileReader\Awa_8_1_0_ObjectReader.cs" />
+    <Compile Include="AwaFileReader\AwaObject.cs" />
+    <Compile Include="AwaFileReader\AwaObjectCollection.cs" />
+    <Compile Include="AwaFileReader\AwaFilePageStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FileFormat\" />
+    <Folder Include="AwaFileReader\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
