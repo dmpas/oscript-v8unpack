@@ -11,6 +11,9 @@ using ScriptEngine.Machine;
 
 namespace v8unpack
 {
+	/// <summary>
+	/// Чтение страничного Ава-файла.
+	/// </summary>
 	public class AwaFilePageStream : Stream
 	{
 
@@ -25,6 +28,13 @@ namespace v8unpack
 		private byte[] _currentPageData;
 		private long _position = 0;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:v8unpack.AwaFilePageStream"/> class.
+		/// </summary>
+		/// <param name="reader">Поток чтения данных.</param>
+		/// <param name="dataSize">Размер данных в байтах.</param>
+		/// <param name="pageSize">Размер страницы в байтах.</param>
+		/// <param name="pages">Массив номеров страниц.</param>
 		public AwaFilePageStream(Stream reader, long dataSize, int pageSize, int[] pages)
 		{
 			_reader = reader;
@@ -58,6 +68,10 @@ namespace v8unpack
 			_dataLeft -= _currentDataSize;
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:v8unpack.AwaFilePageStream"/> can read.
+		/// </summary>
+		/// <value><c>true</c> if can read; otherwise, <c>false</c>.</value>
 		public override bool CanRead
 		{
 			get
@@ -66,6 +80,10 @@ namespace v8unpack
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:v8unpack.AwaFilePageStream"/> can seek.
+		/// </summary>
+		/// <value><c>true</c> if can seek; otherwise, <c>false</c>.</value>
 		public override bool CanSeek
 		{
 			get
@@ -74,6 +92,10 @@ namespace v8unpack
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:v8unpack.AwaFilePageStream"/> can write.
+		/// </summary>
+		/// <value><c>true</c> if can write; otherwise, <c>false</c>.</value>
 		public override bool CanWrite
 		{
 			get
@@ -82,6 +104,10 @@ namespace v8unpack
 			}
 		}
 
+		/// <summary>
+		/// Gets the length.
+		/// </summary>
+		/// <value>The length.</value>
 		public override long Length
 		{
 			get
@@ -90,6 +116,10 @@ namespace v8unpack
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the position.
+		/// </summary>
+		/// <value>The position.</value>
 		public override long Position
 		{
 			get
@@ -103,21 +133,41 @@ namespace v8unpack
 			}
 		}
 
+		/// <summary>
+		/// Flush this instance.
+		/// </summary>
 		public override void Flush()
 		{
 			throw new NotSupportedException();
 		}
 
+		/// <summary>
+		/// Seek the specified offset and origin.
+		/// </summary>
+		/// <returns>The seek.</returns>
+		/// <param name="offset">Offset.</param>
+		/// <param name="origin">Origin.</param>
 		public override long Seek(long offset, SeekOrigin origin)
 		{
 			throw new NotSupportedException();
 		}
 
+		/// <summary>
+		/// Sets the length.
+		/// </summary>
+		/// <param name="value">Value.</param>
 		public override void SetLength(long value)
 		{
 			throw new NotSupportedException();
 		}
 
+		/// <summary>
+		/// Read the specified buffer, offset and count.
+		/// </summary>
+		/// <returns>The read.</returns>
+		/// <param name="buffer">Buffer.</param>
+		/// <param name="offset">Offset.</param>
+		/// <param name="count">Count.</param>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
 			if (_currentPageData == null)
@@ -154,6 +204,13 @@ namespace v8unpack
 			return bytesRead;
 		}
 
+		/// <summary>
+		/// Write the specified buffer, offset and count.
+		/// </summary>
+		/// <returns>The write.</returns>
+		/// <param name="buffer">Buffer.</param>
+		/// <param name="offset">Offset.</param>
+		/// <param name="count">Count.</param>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			throw new NotSupportedException();

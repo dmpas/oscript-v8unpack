@@ -51,7 +51,8 @@ namespace TestApp
 
 			Console.WriteLine("Result = {0}", result);
 
-			var fileName = @"D:\1C\Retail\RetailSmall4\1Cv8.1CD";
+			// var fileName = @"D:\1C\Retail\RetailSmall4\1Cv8.1CD";
+			var fileName = @"D:\temp\image2\1Cv8.1CD";
 			using (var Reader = v8unpack.AwaFileReader.Constructor(ValueFactory.Create(fileName)) as v8unpack.AwaFileReader)
 			{
 				Reader.ExtractAll(@"C:\Temp\awa");

@@ -117,6 +117,11 @@ namespace v8unpack
 		public AwaObjectCollection Elements { get; }
 
 
+		/// <summary>
+		/// Извлекает указанный файл.
+		/// </summary>
+		/// <param name="element">Извлекаемый файл.</param>
+		/// <param name="filename">Путь к файлу на диске.</param>
 		[ContextMethod("Извлечь")]
 		public void Extract(AwaObject element, string filename)
 		{
@@ -129,19 +134,21 @@ namespace v8unpack
 
 		}
 
+		/// <summary>
+		/// Извлекает все файлы в указанный каталог.
+		/// </summary>
+		/// <param name="dirname">Целевой каталог.</param>
 		[ContextMethod("ИзвлечьВсе")]
 		public void ExtractAll(string dirname)
 		{
-			var index = 0;
 			foreach (var element in Elements)
 			{
 				if (element == null)
 				{
 					continue;
 				}
-				var filename = Path.Combine(dirname, string.Format("{0}.header", index));
+				var filename = Path.Combine(dirname, string.Format("{0}.header", element.HeaderPageIndex));
 				Extract(element, filename);
-				++index;
 			}
 		}
 
@@ -157,6 +164,13 @@ namespace v8unpack
 			return new AwaFileReader(reader);
 		}
 
+		/// <summary>
+		/// Releases all resource used by the <see cref="T:v8unpack.AwaFileReader"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="T:v8unpack.AwaFileReader"/>. The
+		/// <see cref="Dispose"/> method leaves the <see cref="T:v8unpack.AwaFileReader"/> in an unusable state. After calling
+		/// <see cref="Dispose"/>, you must release all references to the <see cref="T:v8unpack.AwaFileReader"/> so the
+		/// garbage collector can reclaim the memory that the <see cref="T:v8unpack.AwaFileReader"/> was occupying.</remarks>
 		public void Dispose()
 		{
 			_reader.Dispose();
