@@ -115,7 +115,7 @@ namespace v8unpack
 
 			if (blockExtractor.IsContainer && recursiveUnpack)
 			{
-				string outputDirectory = Path.Combine(Path.GetFileName(destDir), element.Name);
+				string outputDirectory = Path.Combine(destDir, element.Name);
 				var tmpData = new MemoryStream(); // TODO: переделать MemoryStream --> FileStream
 				fileExtractor.CopyTo(tmpData);
 				tmpData.Seek(0, SeekOrigin.Begin);
@@ -127,7 +127,7 @@ namespace v8unpack
 			}
 
 			// Просто файл
-			string outputFileName = Path.Combine(Path.GetFullPath(destDir), element.Name);
+			string outputFileName = Path.Combine(destDir, element.Name);
 			using (var outputFile = new FileStream(outputFileName, FileMode.Create))
 			{
 				fileExtractor.CopyTo(outputFile);
