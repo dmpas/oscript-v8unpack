@@ -7,19 +7,9 @@ init:
 - ps: Restart-Computer
 install:
 - cmd: >-
-    mkdir engine
+    choco install onescript.cli -source https://www.myget.org/F/onescript -y
 
-    cd engine
-
-    curl -o os.exe http://oscript.io/downloads/latest/exe
-
-    os.exe /silent
-
-    set PATH=%ProgramFiles(x86)%\OneScript\bin;%PATH%
-
-    cd ..
-
-    oscript -version
+    refreshenv
 
     opm install opm
 
