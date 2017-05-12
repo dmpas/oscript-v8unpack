@@ -1,4 +1,4 @@
-version: 0.1.0-{build}
+version: 1.0.0-{build}
 before_build:
 - ps: nuget restore
 init:
@@ -7,19 +7,9 @@ init:
 - ps: Restart-Computer
 install:
 - cmd: >-
-    mkdir engine
+    choco install onescript.cli -source https://www.myget.org/F/onescript -y
 
-    cd engine
-
-    curl -o os.exe http://oscript.io/downloads/latest/exe
-
-    os.exe /silent
-
-    set PATH=%ProgramFiles(x86)%\OneScript\bin;%PATH%
-
-    cd ..
-
-    oscript -version
+    refreshenv
 
     opm install opm
 
