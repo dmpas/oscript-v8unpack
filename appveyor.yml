@@ -20,7 +20,7 @@ test_script:
 
 after_build:
 - cmd: >-
-    copy v8unpack\bin\Debug\v8unpack.dll oslib\bin\
+    copy v8unpack\bin\Debug\v8unpack.dll oslib\
 
     cd oslib
 
