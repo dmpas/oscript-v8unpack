@@ -1,4 +1,4 @@
-version: 1.0.0-{build}
+version: 1.0.1-{build}
 before_build:
 - ps: nuget restore
 init:
@@ -31,3 +31,5 @@ after_build:
 artifacts:
 - path: oslib\*.ospx
   name: v8unpack
+- path: oslib\*.dll
+  name: components
