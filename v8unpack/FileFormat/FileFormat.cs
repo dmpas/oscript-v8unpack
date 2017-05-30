@@ -177,7 +177,7 @@ namespace v8unpack
 				var enc = new System.Text.UnicodeEncoding(bigEndian: false, byteOrderMark: false);
 
 				var NameOffset = 8 + 8 + 4;
-				var name = enc.GetString(buf, NameOffset, buf.Length - NameOffset).TrimEnd('\0');
+				var name = enc.GetString(buf, NameOffset, buf.Length - NameOffset - 4).TrimEnd('\0');
 
 				// TODO: Разобраться, как правильно сериализовать дату
 				var creationDate = DateTime.FromBinary((long)serializedCreationDate);
