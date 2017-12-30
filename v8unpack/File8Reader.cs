@@ -154,6 +154,12 @@ namespace v8unpack
 			_reader.Close();
 		}
 
+		[ContextMethod("Закрыть")]
+		public void Close()
+		{
+			_reader.Close();
+		}
+
 		/// <summary>
 		/// Создаёт чтение контейнера восьмофайлов по имени файла.
 		/// </summary>
