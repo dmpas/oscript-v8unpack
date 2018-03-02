@@ -29,7 +29,7 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScriptEngine, Version=1.0.19.104, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="ScriptEngine, Version=1.0.19.105, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\OneScript.1.0.19\lib\net452\ScriptEngine.dll</HintPath>
     </Reference>
     <Reference Include="System" />

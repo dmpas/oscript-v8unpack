@@ -8,7 +8,7 @@ at http://mozilla.org/MPL/2.0/.
 	Author:			disa_da
 	E-mail:			disa_da2@mail.ru
 /**
-	2014-2017       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
+	2014-2018       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
 */
 
 using System;
@@ -100,30 +100,39 @@ namespace v8unpack
 				Directory.CreateDirectory(destDir);
 			}
 
-			_reader.Seek(element.DataOffset, SeekOrigin.Begin);
-
 			Stream fileExtractor;
-			var blockExtractor = new BlockReaderStream(_reader);
-			if (blockExtractor.IsPacked && _dataPacked)
+
+			if (element.DataOffset == FileFormat.V8_FF_SIGNATURE)
 			{
-				fileExtractor = new DeflateStream(blockExtractor, CompressionMode.Decompress);
+				// Файл есть, но пуст
+				fileExtractor = new MemoryStream();
 			}
 			else
 			{
-				fileExtractor = blockExtractor;
-			}
+				_reader.Seek(element.DataOffset, SeekOrigin.Begin);
 
-			if (blockExtractor.IsContainer && recursiveUnpack)
-			{
-				string outputDirectory = Path.Combine(destDir, element.Name);
-				var tmpData = new MemoryStream(); // TODO: переделать MemoryStream --> FileStream
-				fileExtractor.CopyTo(tmpData);
-				tmpData.Seek(0, SeekOrigin.Begin);
+				var blockExtractor = new BlockReaderStream(_reader);
+				if (blockExtractor.IsPacked && _dataPacked)
+				{
+					fileExtractor = new DeflateStream(blockExtractor, CompressionMode.Decompress);
+				}
+				else
+				{
+					fileExtractor = blockExtractor;
+				}
 
-				var internalContainer = new File8Reader(tmpData, dataPacked: false);
-				internalContainer.ExtractAll(outputDirectory, recursiveUnpack);
+				if (blockExtractor.IsContainer && recursiveUnpack)
+				{
+					string outputDirectory = Path.Combine(destDir, element.Name);
+					var tmpData = new MemoryStream(); // TODO: переделать MemoryStream --> FileStream
+					fileExtractor.CopyTo(tmpData);
+					tmpData.Seek(0, SeekOrigin.Begin);
 
-				return;
+					var internalContainer = new File8Reader(tmpData, dataPacked: false);
+					internalContainer.ExtractAll(outputDirectory, recursiveUnpack);
+
+					return;
+				}
 			}
 
 			// Просто файл
