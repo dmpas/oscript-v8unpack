@@ -4,7 +4,7 @@ before_build:
 - ps: nuget restore
 init:
 - ps: Set-WinSystemLocale ru-RU
-- ps: Start-Sleep -s 5
+- ps: Start-Sleep -s 15
 - ps: Restart-Computer
 install:
 - cmd: >-
