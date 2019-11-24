@@ -8,7 +8,7 @@ at http://mozilla.org/MPL/2.0/.
 	Author:			disa_da
 	E-mail:			disa_da2@mail.ru
 /**
-	2014-2017       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
+	2014-2018       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
 */
 using System;
 using System.IO;
@@ -169,6 +169,11 @@ namespace v8unpack
 				this.ModificationDate = modificationDate;
 			}
 
+			public static DateTime File8Date(UInt64 serializedDate)
+			{
+				return new DateTime((long) serializedDate * 1000);
+			}
+
 			public static ElementHeader Parse(byte[] buf)
 			{
 				var serializedCreationDate = BitConverter.ToUInt64(buf, 0);
@@ -179,9 +184,8 @@ namespace v8unpack
 				var NameOffset = 8 + 8 + 4;
 				var name = enc.GetString(buf, NameOffset, buf.Length - NameOffset - 4).TrimEnd('\0');
 
-				// TODO: Разобраться, как правильно сериализовать дату
-				var creationDate = DateTime.FromBinary((long)serializedCreationDate);
-				var modificationDate = DateTime.FromBinary((long)serializedModificationDate);
+				var creationDate = File8Date(serializedCreationDate);
+				var modificationDate = File8Date(serializedModificationDate);
 
 				return new ElementHeader(name, creationDate, modificationDate);
 			}
