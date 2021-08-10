@@ -8,7 +8,7 @@ at http://mozilla.org/MPL/2.0/.
 	Author:			disa_da
 	E-mail:			disa_da2@mail.ru
 /**
-	2014-2017       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
+	2014-2018       dmpas           sergey(dot)batanov(at)dmpas(dot)ru
 */
 using System;
 using System.IO;
@@ -75,65 +75,23 @@ namespace v8unpack
 			ReadPage();
 		}
 
-		public bool IsPacked
-		{
-			get
-			{
-				return _isPacked;
-			}
-		}
+		public bool IsPacked => _isPacked;
 
-		public bool IsContainer
-		{
-			get
-			{
-				return _isContainer;
-			}
-		}
+		public bool IsContainer => _isContainer;
 
-		public override bool CanRead
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool CanRead => true;
 
-		public override bool CanSeek
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool CanSeek => false;
 
-		public override bool CanWrite
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool CanWrite => false;
 
-		public override long Length
-		{
-			get
-			{
-				return _dataSize;
-			}
-		}
+		public override long Length => _dataSize;
 
 		public override long Position
 		{
-			get
-			{
-				throw new NotSupportedException();
-			}
+			get => throw new NotSupportedException();
 
-			set
-			{
-				throw new NotSupportedException();
-			}
+			set => throw new NotSupportedException();
 		}
 
 		public override void Flush()
