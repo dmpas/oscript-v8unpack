@@ -173,21 +173,22 @@ namespace v8unpack
 		/// Создаёт чтение контейнера восьмофайлов по имени файла.
 		/// </summary>
 		/// <param name="filename">Путь к файлу.</param>
+		/// <param name="dataPacked">Корневой контейнер сжат (по умолчанию да).</param>
 		[ScriptConstructor]
-		public static IRuntimeContextInstance Constructor(IValue filename)
+		public static IRuntimeContextInstance Constructor(IValue filename, IValue dataPacked = null)
 		{
 			const int MAGIC_SIZE = 100 * 1024;
 			var fileStream = new FileStream(filename.AsString(), FileMode.Open);
 			if (fileStream.Length >= MAGIC_SIZE)
 			{
-				return new File8Reader(fileStream);
+				return new File8Reader(fileStream, dataPacked?.AsBoolean() ?? true);
 			}
 
 			var memoryStream = new MemoryStream();
 			fileStream.CopyTo(memoryStream);
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
-			return new File8Reader(memoryStream);
+			return new File8Reader(memoryStream, dataPacked?.AsBoolean() ?? true);
 		}
 
 	}
