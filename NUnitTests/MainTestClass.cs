@@ -4,15 +4,8 @@ Mozilla Public License, v.2.0. If a copy of the MPL
 was not distributed with this file, You can obtain one 
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
-using System;
-using System.IO;
-using NUnit.Framework;
-using ScriptEngine.HostedScript;
-using ScriptEngine.Machine;
-using ScriptEngine.Environment;
-using v8unpack;
 
-// Используется NUnit 3.6
+using NUnit.Framework;
 
 namespace NUnitTests
 {

@@ -6,73 +6,54 @@ at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 using System;
 using System.IO;
-using NUnit.Framework;
+using OneScript.Sources;
+using OneScript.StandardLibrary;
+using OneScript.StandardLibrary.Collections;
+using OneScript.Types;
+using ScriptEngine;
 using ScriptEngine.Machine.Contexts;
-using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
-using ScriptEngine.Environment;
 using ScriptEngine.HostedScript;
+using ScriptEngine.Hosting;
 
 namespace NUnitTests
 {
 	public class EngineHelpWrapper : IHostApplication
 	{
-
-		private HostedScriptEngine engine;
-
-		public EngineHelpWrapper()
-		{
-		}
-
-		public HostedScriptEngine Engine
-		{
-			get
-			{
-				return engine;
-			}
-		}
+		public HostedScriptEngine Engine { get; private set; }
 
 		public IValue TestRunner { get; private set; }
 
 		public HostedScriptEngine StartEngine()
 		{
-			engine = new HostedScriptEngine();
-			engine.Initialize();
-
-			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(v8unpack.File8Reader)));
-
-			// Подключаем тестовую оболочку
-			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(EngineHelpWrapper)));
+			var mainEngine = DefaultEngineBuilder.Create()
+				.SetDefaultOptions()
+				.SetupEnvironment(envSetup =>
+				{
+					envSetup.AddAssembly(typeof(v8unpack.File8Reader).Assembly);
+					envSetup.AddAssembly(typeof(EngineHelpWrapper).Assembly);
+				})
+				.Build();
+			
+			Engine = new HostedScriptEngine(mainEngine);
 
 			var testrunnerSource = LoadFromAssemblyResource("NUnitTests.Tests.testrunner.os");
-			var testrunnerModule = engine.GetCompilerService().CreateModule(testrunnerSource);
+			var testrunnerModule = Engine.GetCompilerService().Compile(testrunnerSource);
 
-			engine.LoadUserScript(new ScriptEngine.UserAddedScript()
-			{
-				Type = ScriptEngine.UserAddedScriptType.Class,
-				Module = testrunnerModule,
-				Symbol = "TestRunner"
-			});
+			Engine.EngineInstance.AttachedScriptsFactory.RegisterTypeModule("TestRunner", testrunnerModule);
 
-			var testRunner = AttachedScriptsFactory.ScriptFactory("TestRunner", new IValue[] { });
-			TestRunner = ValueFactory.Create(testRunner);
+			TestRunner = NewInstanceOf("TestRunner", Engine.EngineInstance);
 
-			return engine;
+			return Engine;
 		}
 
 		public void RunTestScript(string resourceName)
 		{
 			var source = LoadFromAssemblyResource(resourceName);
-			var module = engine.GetCompilerService().CreateModule(source);
+			var module = Engine.GetCompilerService().Compile(source);
+			Engine.EngineInstance.AttachedScriptsFactory.RegisterTypeModule(resourceName, module);
 
-			engine.LoadUserScript(new ScriptEngine.UserAddedScript()
-			{
-				Type = ScriptEngine.UserAddedScriptType.Class,
-				Module = module,
-				Symbol = resourceName
-			});
-
-			var test = AttachedScriptsFactory.ScriptFactory(resourceName, new IValue[] { });
+			var test = NewInstanceOf(resourceName, Engine.EngineInstance);
 			ArrayImpl testArray;
 			{
 				int methodIndex = test.FindMethod("ПолучитьСписокТестов");
@@ -98,7 +79,7 @@ namespace NUnitTests
 			}
 		}
 
-		public ICodeSource LoadFromAssemblyResource(string resourceName)
+		public SourceCode LoadFromAssemblyResource(string resourceName)
 		{
 			var asm = System.Reflection.Assembly.GetExecutingAssembly();
 			string codeSource;
@@ -111,7 +92,19 @@ namespace NUnitTests
 				}
 			}
 
-			return engine.Loader.FromString(codeSource);
+			return Engine.Loader.FromString(codeSource);
+		}
+
+		private UserScriptContextInstance NewInstanceOf(string typeName, ScriptingEngine mainEngine)
+		{
+			var activationContext = new TypeActivationContext
+			{
+				TypeName = typeName,
+				Services = mainEngine.Services,
+				TypeManager = mainEngine.TypeManager
+			};
+			
+			return AttachedScriptsFactory.ScriptFactory(activationContext, Array.Empty<IValue>());
 		}
 
 		public void Echo(string str, MessageStatusEnum status = MessageStatusEnum.Ordinary)
@@ -123,7 +116,7 @@ namespace NUnitTests
 			return new string[] { };
 		}
 
-		public bool InputString(out string result, int maxLen)
+		public bool InputString(out string result, string prompt, int maxLen, bool multiline)
 		{
 			result = "";
 			return false;
