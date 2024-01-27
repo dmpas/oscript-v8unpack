@@ -41,15 +41,15 @@ test_script:
 after_build:
 - cmd: >-
 
-    del %main_project%\bin\%CONFIGURATION%\net5.0\*.pdb
+    del %main_project%\bin\%CONFIGURATION%\net6.0\*.pdb
 
     mkdir -p oslib\bin
 
-    OneScriptDocumenter.exe json oslib\bin\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net5.0\%main_project%.dll
+    OneScriptDocumenter.exe json oslib\bin\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net6.0\%main_project%.dll
     
-    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net5.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net5.0\DotNetZip*.*
+    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net6.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net6.0\DotNetZip*.*
     
-    xcopy %main_project%\bin\%CONFIGURATION%\net5.0\* oslib\bin\
+    xcopy %main_project%\bin\%CONFIGURATION%\net6.0\* oslib\bin\
     
     cd oslib
 
