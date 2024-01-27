@@ -14,6 +14,7 @@ using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.IO;
+using OneScript.Contexts;
 
 namespace v8unpack
 {

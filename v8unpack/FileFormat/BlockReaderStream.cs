@@ -12,6 +12,7 @@ at http://mozilla.org/MPL/2.0/.
 */
 using System;
 using System.IO;
+using System.IO.Compression;
 
 namespace v8unpack
 {
@@ -51,11 +52,15 @@ namespace v8unpack
 			byte[] bufferToCheck = _currentPageData;
 			try
 			{
-				var tmp = Ionic.Zlib.DeflateStream.UncompressBuffer(_currentPageData);
+				using var srcMem = new MemoryStream(_currentPageData);
+				using var decompressor = new DeflateStream(srcMem, CompressionMode.Decompress);
+				using var destMem = new MemoryStream(bufferToCheck.Length * 2);
+				
+				decompressor.CopyTo(destMem);
 				_isPacked = true;
-				bufferToCheck = tmp;
+				bufferToCheck = destMem.ToArray();
 			}
-			catch (Ionic.Zlib.ZlibException)
+			catch (InvalidDataException)
 			{
 				_isPacked = false;
 			}

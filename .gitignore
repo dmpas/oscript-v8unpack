@@ -10,8 +10,8 @@ packages/
 *.user
 *.sln.iml
 
-/src/**/[Bb]in/
-/src/**/[Oo]bj/
+/**/[Bb]in/
+/**/[Oo]bj/
 [Dd]ebug
 [Rr]elease
 /*.log
