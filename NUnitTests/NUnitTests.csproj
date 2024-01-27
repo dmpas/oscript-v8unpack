@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
@@ -11,14 +11,21 @@
         <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
 
-        <PackageReference Include="OneScript" Version="2.0.3-alpha" />
-        <PackageReference Include="OneScript.StandardLibrary" Version="2.0.3-alpha" />
-        <PackageReference Include="OneScript.CoreLib" Version="2.0.3-alpha" />
-        <PackageReference Include="OneScript.Hosting" Version="2.0.3-alpha" />
+        <PackageReference Include="OneScript" Version="2.0.0-rc4" />
+        <PackageReference Include="OneScript.StandardLibrary" Version="2.0.0-rc4" />
+        <PackageReference Include="OneScript.CoreLib" Version="2.0.0-rc4" />
+        <PackageReference Include="OneScript.Hosting" Version="2.0.0-rc4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\v8unpack\v8unpack.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Tests\external.os" />
+      <EmbeddedResource Include="Tests\external.os" />
+      <None Remove="Tests\testrunner.os" />
+      <EmbeddedResource Include="Tests\testrunner.os" />
     </ItemGroup>
 
 </Project>

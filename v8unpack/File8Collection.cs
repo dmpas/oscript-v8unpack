@@ -18,6 +18,7 @@ using System.Linq;
 using System.Collections;
 using OneScript.Commons;
 using OneScript.Contexts;
+using OneScript.Exceptions;
 using OneScript.Types;
 
 namespace v8unpack
@@ -26,7 +27,7 @@ namespace v8unpack
 	/// Коллекция восьмофайлов
 	/// </summary>
 	[ContextClass("КоллекцияФайловФормата8")]
-	public class File8Collection : AutoContext<File8Collection>, ICollectionContext, IEnumerable<File8>
+	public class File8Collection : AutoContext<File8Collection>, ICollectionContext<File8>
 	{
 
 		private readonly IReadOnlyList<File8> _data;

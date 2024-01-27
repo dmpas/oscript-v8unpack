@@ -1,74 +1,76 @@
 ﻿/*----------------------------------------------------------
-This Source Code Form is subject to the terms of the 
-Mozilla Public License, v.2.0. If a copy of the MPL 
-was not distributed with this file, You can obtain one 
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v.2.0. If a copy of the MPL
+was not distributed with this file, You can obtain one
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 using System;
 using System.IO;
-using OneScript.Sources;
 using OneScript.StandardLibrary;
 using OneScript.StandardLibrary.Collections;
-using OneScript.Types;
 using ScriptEngine;
-using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript;
+using ScriptEngine.HostedScript.Extensions;
 using ScriptEngine.Hosting;
 
 namespace NUnitTests
 {
 	public class EngineHelpWrapper : IHostApplication
 	{
-		public HostedScriptEngine Engine { get; private set; }
-
-		public IValue TestRunner { get; private set; }
-
-		public HostedScriptEngine StartEngine()
+		public EngineHelpWrapper()
 		{
-			var mainEngine = DefaultEngineBuilder.Create()
-				.SetDefaultOptions()
-				.SetupEnvironment(envSetup =>
-				{
-					envSetup.AddAssembly(typeof(v8unpack.File8Reader).Assembly);
-					envSetup.AddAssembly(typeof(EngineHelpWrapper).Assembly);
-				})
-				.Build();
+		}
+
+		private ScriptingEngine Engine { get; set; }
+
+		private IValue TestRunner { get; set; }
+
+		public void StartEngine()
+		{
+			var builder = DefaultEngineBuilder.Create();
+			builder.SetupConfiguration(providers => {});
+			builder.SetDefaultOptions()
+				.UseImports()
+				.UseNativeRuntime()
+				.UseFileSystemLibraries()
+				;
+
+			Engine = builder.Build();
 			
-			Engine = new HostedScriptEngine(mainEngine);
+			// Регистрируем сборку по имени любого из стандартных классов движка
+			Engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(ArrayImpl)));
+			
+			// Тут можно указать любой класс из компоненты
+			Engine.AttachExternalAssembly(System.Reflection.Assembly.GetAssembly(typeof(v8unpack.File8)));
 
-			var testrunnerSource = LoadFromAssemblyResource("NUnitTests.Tests.testrunner.os");
-			var testrunnerModule = Engine.GetCompilerService().Compile(testrunnerSource);
+			var hosted = new HostedScriptEngine(Engine);
+			hosted.Initialize();
+			
+			var cs = Engine.GetCompilerService(); 
+			var testrunnerSource = LoadCodeFromAssemblyResource("NUnitTests.Tests.testrunner.os");
+			var testRunner = Engine.AttachedScriptsFactory.LoadFromString(cs, testrunnerSource);
+			
+			TestRunner = (IValue)testRunner;
 
-			Engine.EngineInstance.AttachedScriptsFactory.RegisterTypeModule("TestRunner", testrunnerModule);
-
-			TestRunner = NewInstanceOf("TestRunner", Engine.EngineInstance);
-
-			return Engine;
 		}
 
 		public void RunTestScript(string resourceName)
 		{
-			var source = LoadFromAssemblyResource(resourceName);
-			var module = Engine.GetCompilerService().Compile(source);
-			Engine.EngineInstance.AttachedScriptsFactory.RegisterTypeModule(resourceName, module);
-
-			var test = NewInstanceOf(resourceName, Engine.EngineInstance);
+			var source = LoadCodeFromAssemblyResource(resourceName);
+			var test = Engine.AttachedScriptsFactory.LoadFromString(Engine.GetCompilerService(), source);
+			
 			ArrayImpl testArray;
 			{
-				int methodIndex = test.FindMethod("ПолучитьСписокТестов");
-
-				{
-					IValue ivTests;
-					test.CallAsFunction(methodIndex, new IValue[] { TestRunner }, out ivTests);
-					testArray = ivTests as ArrayImpl;
-				}
+				var methodIndex = test.GetMethodNumber("ПолучитьСписокТестов");
+				test.CallAsFunction(methodIndex, new IValue[] { TestRunner }, out var ivTests);
+				testArray = ivTests as ArrayImpl;
 			}
 
 			foreach (var ivTestName in testArray)
 			{
 				string testName = ivTestName.AsString();
-				int methodIndex = test.FindMethod(testName);
+				var methodIndex = test.GetMethodNumber(testName);
 				if (methodIndex == -1)
 				{
 					// Тест указан, но процедуры нет или она не экспортирована
@@ -79,36 +81,24 @@ namespace NUnitTests
 			}
 		}
 
-		public SourceCode LoadFromAssemblyResource(string resourceName)
+		private static string LoadCodeFromAssemblyResource(string resourceName)
 		{
 			var asm = System.Reflection.Assembly.GetExecutingAssembly();
-			string codeSource;
-
-			using (Stream s = asm.GetManifestResourceStream(resourceName))
-			{
-				using (StreamReader r = new StreamReader(s))
-				{
-					codeSource = r.ReadToEnd();
-				}
-			}
-
-			return Engine.Loader.FromString(codeSource);
-		}
-
-		private UserScriptContextInstance NewInstanceOf(string typeName, ScriptingEngine mainEngine)
-		{
-			var activationContext = new TypeActivationContext
-			{
-				TypeName = typeName,
-				Services = mainEngine.Services,
-				TypeManager = mainEngine.TypeManager
-			};
-			
-			return AttachedScriptsFactory.ScriptFactory(activationContext, Array.Empty<IValue>());
+			using var resourceStream = asm.GetManifestResourceStream(resourceName) ??
+			                           throw new NullReferenceException(resourceName);
+			using var reader = new StreamReader(resourceStream);
+			var codeSource = reader.ReadToEnd();
+			return codeSource;
 		}
 
 		public void Echo(string str, MessageStatusEnum status = MessageStatusEnum.Ordinary)
 		{
+			Console.WriteLine(str);
+		}
+
+		public bool InputString(out string result, string prompt, int maxLen, bool multiline)
+		{
+			throw new NotImplementedException();
 		}
 
 		public string[] GetCommandLineArguments()
@@ -116,7 +106,7 @@ namespace NUnitTests
 			return new string[] { };
 		}
 
-		public bool InputString(out string result, string prompt, int maxLen, bool multiline)
+		public bool InputString(out string result, int maxLen)
 		{
 			result = "";
 			return false;
