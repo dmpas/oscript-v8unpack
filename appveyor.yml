@@ -1,32 +1,60 @@
-image: Visual Studio 2017
-version: 1.0.5-{build}
+image: Visual Studio 2022
+version: 2.0.0-{build}
 before_build:
 - ps: nuget restore
 init:
+- REG ADD "HKLM\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 65001>nul" /f
 - ps: Set-WinSystemLocale ru-RU
 - ps: Start-Sleep -s 15
 - ps: Restart-Computer
 install:
 - cmd: >-
-    choco install onescript-cli -y
+    mkdir engine
 
-    refreshenv
+    cd engine
+
+    appveyor DownloadFile https://oscript.io/downloads/preview/OneScript-2.0.0-rc4-fdd-x64.zip -FileName fdd.zip
+
+    7z x fdd.zip > NUL
+
+    set PATH=%cd%\bin;%PATH%
+
+    cd ..
+
+    appveyor DownloadFile https://github.com/dmpas/OneScriptDocumenter/releases/download/1.0.13/documenter.zip -FileName OneScriptDocumenter.zip
+
+    7z x OneScriptDocumenter.zip > NUL
+
+    oscript -version
 
     opm install opm
 
 build:
   verbosity: minimal
+configuration: Release
 test_script:
-- ps: nunit3-console --x86 NUnitTests\bin\Debug\NUnitTests.dll
+- cmd: nunit3-console NUnitTests\bin\%CONFIGURATION%\net6.0\NUnitTests.dll --result=myresults.xml;format=AppVeyor
+- cmd: oscript testcomponent.os
 
 after_build:
 - cmd: >-
-    copy v8unpack\bin\Debug\v8unpack.dll oslib\
 
+    del %main_project%\bin\%CONFIGURATION%\net5.0\*.pdb
+
+    mkdir -p oslib\bin
+
+    OneScriptDocumenter.exe json oslib\bin\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net5.0\%main_project%.dll
+    
+    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net5.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net5.0\DotNetZip*.*
+    
+    xcopy %main_project%\bin\%CONFIGURATION%\net5.0\* oslib\bin\
+    
     cd oslib
 
     opm build .
-
+    
+    for %%X in (*.ospx) do (opm install -f %%X )
+    
     cd ..
 
 artifacts:
