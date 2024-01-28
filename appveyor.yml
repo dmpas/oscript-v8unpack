@@ -43,13 +43,13 @@ after_build:
 
     del %main_project%\bin\%CONFIGURATION%\net6.0\*.pdb
 
-    mkdir -p oslib\bin
+    mkdir -p oslib\Components\dotnet
 
-    OneScriptDocumenter.exe json oslib\bin\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net6.0\%main_project%.dll
+    OneScriptDocumenter.exe json oslib\Components\dotnet\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net6.0\1script_%main_project%.dll
     
     del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net6.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net6.0\DotNetZip*.*
     
-    xcopy %main_project%\bin\%CONFIGURATION%\net6.0\* oslib\bin\
+    xcopy %main_project%\bin\%CONFIGURATION%\net6.0\* oslib\Components\dotnet\
     
     cd oslib
 
@@ -62,5 +62,5 @@ after_build:
 artifacts:
 - path: oslib\*.ospx
   name: v8unpack
-- path: oslib\*.dll
+- path: oslib\Components\dotnet\*.dll
   name: components

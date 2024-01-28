@@ -6,6 +6,8 @@
         <PackageVersion>2.0.0</PackageVersion>
         <AssemblyVersion>2.0.0</AssemblyVersion>
         <FileVersion>2.0.0</FileVersion>
+        <Company>1script_v8unpack</Company>
+        <AssemblyName>1script_v8unpack</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

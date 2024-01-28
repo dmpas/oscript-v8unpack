@@ -5,9 +5,7 @@
 	.АдресАвтора("sergey.batanov@dmpas.ru")
 	.Описание("Компонента работы с файлами формата 8")
 	.ВерсияСреды("2.0.0")
-	.ВключитьФайл("lib.config")
-	.ВключитьФайл("bin/v8unpack.dll")
-	.ВключитьФайл("package-loader.os")
+	.ВключитьФайл("Components")
 ;
 
 // vim: filetype=onescript
