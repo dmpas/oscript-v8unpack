@@ -1,36 +1,97 @@
-image: Visual Studio 2017
-version: 1.0.5-{build}
+version: 1.0.6-{build}
+image: Visual Studio 2022
+environment:
+  main_project: v8unpack
 before_build:
 - ps: nuget restore
 init:
+- REG ADD "HKLM\Software\Microsoft\Command Processor" /v Autorun /t REG_SZ /d "chcp 65001>nul" /f
 - ps: Set-WinSystemLocale ru-RU
 - ps: Start-Sleep -s 15
 - ps: Restart-Computer
 install:
 - cmd: >-
-    choco install onescript-cli -y
+    mkdir os2
 
-    refreshenv
+    cd os2
 
-    opm install opm
+    appveyor DownloadFile https://oscript.io/downloads/preview/OneScript-2.0.0-rc4-fdd-x64.zip -FileName fdd.zip
+
+    7z x fdd.zip > NUL
+    
+    bin\oscript.bat -version
+
+    bin\oscript.bat lib\opm\src\cmd\opm.os install opm
+
+    cd ..
+
+- cmd: >-
+    mkdir os1
+
+    cd os1
+
+    appveyor DownloadFile https://oscript.io/downloads/latest/zip -FileName latest.zip
+
+    7z x latest.zip > NUL
+    
+    bin\oscript.exe -version
+
+    bin\oscript.exe lib\opm\src\cmd\opm.os install opm
+
+    cd ..
+
+- cmd: >-
+
+    appveyor DownloadFile https://github.com/dmpas/OneScriptDocumenter/releases/download/1.0.13/documenter.zip -FileName OneScriptDocumenter.zip
+
+    7z x OneScriptDocumenter.zip > NUL
 
 build:
   verbosity: minimal
+configuration: Release
 test_script:
-- ps: nunit3-console --x86 NUnitTests\bin\Debug\NUnitTests.dll
+- cmd: nunit3-console NUnitTests\bin\%CONFIGURATION%\net6.0\NUnitTests.dll --result=myresults.xml;format=AppVeyor
+- cmd: >-
+    set OSLIB_LOADER_TRACE=1
+    
+    os2\bin\oscript.bat testcomponent.os
+    
+- cmd: >-
+    set OSLIB_LOADER_TRACE=1
+    
+    os1\bin\oscript.exe testcomponent.os
 
 after_build:
 - cmd: >-
-    copy v8unpack\bin\Debug\v8unpack.dll oslib\
 
+    del %main_project%\bin\%CONFIGURATION%\net6.0\*.pdb
+    
+    mkdir oslib\Components
+
+    mkdir oslib\Components\dotnet
+    
+    mkdir oslib\Components\net4
+
+    OneScriptDocumenter.exe json oslib\Components\dotnet\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net6.0\1script_%main_project%.dll
+    
+    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net6.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net6.0\DotNetZip*.*
+    
+    xcopy %main_project%\bin\%CONFIGURATION%\net6.0\* oslib\Components\dotnet\
+    
+    xcopy assets\1script_v8unpack.dll oslib\Components\net4\
+    
     cd oslib
 
-    opm build .
-
+    ..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os build .
+    
+    for %%X in (*.ospx) do (..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os install -f %%X )
+    
+    for %%X in (*.ospx) do (..\os1\bin\oscript.exe ..\os1\lib\opm\src\cmd\opm.os install -f %%X )
+    
     cd ..
 
 artifacts:
 - path: oslib\*.ospx
   name: v8unpack
-- path: oslib\*.dll
+- path: oslib\Components\dotnet\*.dll
   name: components

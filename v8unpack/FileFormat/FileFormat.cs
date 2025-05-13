@@ -206,6 +206,5 @@ namespace v8unpack
 
 			return true;
 		}
-
 	}
 }

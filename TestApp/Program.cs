@@ -5,8 +5,10 @@ was not distributed with this file, You can obtain one
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 using System;
+using OneScript.StandardLibrary;
 using ScriptEngine.HostedScript;
 using ScriptEngine.HostedScript.Library;
+using ScriptEngine.Hosting;
 
 namespace TestApp
 {
@@ -32,10 +34,15 @@ namespace TestApp
 
 		public static HostedScriptEngine StartEngine()
 		{
-			var engine = new ScriptEngine.HostedScript.HostedScriptEngine();
+			var mainEngine = DefaultEngineBuilder.Create()
+				.SetDefaultOptions()
+				.SetupEnvironment(envSetup =>
+				{
+					envSetup.AddAssembly(typeof(v8unpack.File8Reader).Assembly);
+				})
+				.Build();
+			var engine = new HostedScriptEngine(mainEngine);
 			engine.Initialize();
-
-			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(v8unpack.File8Reader)));
 
 			return engine;
 		}
@@ -66,6 +73,11 @@ namespace TestApp
 		public void ShowExceptionInfo(Exception exc)
 		{
 			Console.WriteLine(exc.ToString());
+		}
+
+		public bool InputString(out string result, string prompt, int maxLen, bool multiline)
+		{
+			throw new NotImplementedException();
 		}
 
 		public bool InputString(out string result, int maxLen)

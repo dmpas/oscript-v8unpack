@@ -1,58 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DFF0E47D-1401-4843-B574-0C07B3361479}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>v8unpack</RootNamespace>
-    <AssemblyName>v8unpack</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\v8unpack.xml</DocumentationFile>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\v8unpack.xml</DocumentationFile>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="DotNetZip, Version=1.13.3.0, Culture=neutral, PublicKeyToken=6583c7c814667745">
-      <HintPath>..\packages\DotNetZip.1.13.3\lib\net40\DotNetZip.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ScriptEngine, Version=1.1.1.42, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\OneScript.1.1.1\lib\net452\ScriptEngine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="File8Reader.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="File8.cs" />
-    <Compile Include="File8Collection.cs" />
-    <Compile Include="FileFormat\FileFormat.cs" />
-    <Compile Include="FileFormat\BlockReaderStream.cs" />
-    <Compile Include="FileFormat\File8FormatException.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileFormat\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>v8unpack</RootNamespace>
+        <PackageVersion>2.0.0</PackageVersion>
+        <AssemblyVersion>2.0.0</AssemblyVersion>
+        <FileVersion>2.0.0</FileVersion>
+        <Company>1script_v8unpack</Company>
+        <AssemblyName>1script_v8unpack</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OneScript" Version="2.0.0-rc4" />
+        <PackageReference Include="OneScript.CoreLib" Version="2.0.0-rc4" />
+    </ItemGroup>
+
 </Project>

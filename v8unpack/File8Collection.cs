@@ -16,6 +16,10 @@ using System.Collections.Generic;
 using ScriptEngine.Machine;
 using System.Linq;
 using System.Collections;
+using OneScript.Commons;
+using OneScript.Contexts;
+using OneScript.Exceptions;
+using OneScript.Types;
 
 namespace v8unpack
 {
@@ -23,7 +27,7 @@ namespace v8unpack
 	/// Коллекция восьмофайлов
 	/// </summary>
 	[ContextClass("КоллекцияФайловФормата8")]
-	public class File8Collection : AutoContext<File8Collection>, ICollectionContext, IEnumerable<File8>
+	public class File8Collection : AutoContext<File8Collection>, ICollectionContext<File8>
 	{
 
 		private readonly IReadOnlyList<File8> _data;
@@ -52,12 +56,12 @@ namespace v8unpack
 		public File8 Get(IValue index)
 		{
 			var rawIndex = index.GetRawValue();
-			if (rawIndex.DataType == DataType.Number)
+			if (rawIndex.SystemType == BasicTypes.Number)
 			{
 				return Get((int)rawIndex.AsNumber());
 			}
 
-			if (rawIndex.DataType == DataType.String)
+			if (rawIndex.SystemType == BasicTypes.String)
 			{
 				return Get(rawIndex.AsString());
 			}

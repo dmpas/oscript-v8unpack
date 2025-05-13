@@ -16,7 +16,8 @@ using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.IO;
 using System.Collections.Generic;
-using Ionic.Zlib;
+using System.IO.Compression;
+using OneScript.Contexts;
 
 namespace v8unpack
 {
