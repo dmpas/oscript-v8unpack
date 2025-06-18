@@ -179,7 +179,7 @@ namespace v8unpack
 		public static IRuntimeContextInstance Constructor(IValue filename, IValue dataPacked = null)
 		{
 			const int MAGIC_SIZE = 100 * 1024;
-			var fileStream = new FileStream(filename.AsString(), FileMode.Open);
+			var fileStream = new FileStream(filename.ExplicitString(), FileMode.Open);
 			if (fileStream.Length >= MAGIC_SIZE)
 			{
 				return new File8Reader(fileStream, dataPacked?.AsBoolean() ?? true);
