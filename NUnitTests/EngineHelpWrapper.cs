@@ -13,6 +13,7 @@ using ScriptEngine.Machine;
 using ScriptEngine.HostedScript;
 using ScriptEngine.HostedScript.Extensions;
 using ScriptEngine.Hosting;
+using OneScript.Execution;
 
 namespace NUnitTests
 {
@@ -25,6 +26,8 @@ namespace NUnitTests
 		private ScriptingEngine Engine { get; set; }
 
 		private IValue TestRunner { get; set; }
+
+		private IBslProcess Process { get; set; }
 
 		public void StartEngine()
 		{
@@ -46,10 +49,11 @@ namespace NUnitTests
 
 			var hosted = new HostedScriptEngine(Engine);
 			hosted.Initialize();
-			
+
 			var cs = Engine.GetCompilerService(); 
 			var testrunnerSource = LoadCodeFromAssemblyResource("NUnitTests.Tests.testrunner.os");
-			var testRunner = Engine.AttachedScriptsFactory.LoadFromString(cs, testrunnerSource);
+			Process = Engine.NewProcess();
+            var testRunner = Engine.AttachedScriptsFactory.LoadFromString(cs, testrunnerSource, Process);
 			
 			TestRunner = (IValue)testRunner;
 
@@ -58,18 +62,18 @@ namespace NUnitTests
 		public void RunTestScript(string resourceName)
 		{
 			var source = LoadCodeFromAssemblyResource(resourceName);
-			var test = Engine.AttachedScriptsFactory.LoadFromString(Engine.GetCompilerService(), source);
+			var test = Engine.AttachedScriptsFactory.LoadFromString(Engine.GetCompilerService(), source, Process);
 			
 			ArrayImpl testArray;
 			{
 				var methodIndex = test.GetMethodNumber("ПолучитьСписокТестов");
-				test.CallAsFunction(methodIndex, new IValue[] { TestRunner }, out var ivTests);
+				test.CallAsFunction(methodIndex, new IValue[] { TestRunner }, out var ivTests, Process);
 				testArray = ivTests as ArrayImpl;
 			}
 
 			foreach (var ivTestName in testArray)
 			{
-				string testName = ivTestName.AsString();
+				string testName = ivTestName.ExplicitString();
 				var methodIndex = test.GetMethodNumber(testName);
 				if (methodIndex == -1)
 				{
@@ -77,7 +81,7 @@ namespace NUnitTests
 					continue;
 				}
 
-				test.CallAsProcedure(methodIndex, new IValue[] { });
+				test.CallAsProcedure(methodIndex, new IValue[] { }, Process);
 			}
 		}
 
