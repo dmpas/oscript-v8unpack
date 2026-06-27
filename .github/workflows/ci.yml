@@ -70,18 +70,6 @@ jobs:
       - name: Test (NUnit)
         run: dotnet test NUnitTests/NUnitTests.csproj -c ${{ env.CONFIGURATION }} --no-build --verbosity normal
 
-      - name: Test (OneScript 2.x)
-        shell: cmd
-        run: |
-          set OSLIB_LOADER_TRACE=1
-          os2\bin\oscript.bat testcomponent.os
-
-      - name: Test (OneScript 1.x)
-        shell: cmd
-        run: |
-          set OSLIB_LOADER_TRACE=1
-          os1\bin\oscript.exe testcomponent.os
-
       - name: Package
         shell: cmd
         run: |
@@ -98,9 +86,27 @@ jobs:
 
           cd oslib
           ..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os build .
+          cd ..
+
+      - name: InstallLocal
+        shell: cmd
+        run: |
+          cd oslib
           for %%X in (*.ospx) do (..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os install -f %%X)
           for %%X in (*.ospx) do (..\os1\bin\oscript.exe ..\os1\lib\opm\src\cmd\opm.os install -f %%X)
           cd ..
+
+      - name: Test (OneScript 2.x)
+        shell: cmd
+        run: |
+          set OSLIB_LOADER_TRACE=1
+          os2\bin\oscript.bat testcomponent.os
+
+      - name: Test (OneScript 1.x)
+        shell: cmd
+        run: |
+          set OSLIB_LOADER_TRACE=1
+          os1\bin\oscript.exe testcomponent.os
 
       - name: Upload ospx artifact
         uses: actions/upload-artifact@v4
