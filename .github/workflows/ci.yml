@@ -40,9 +40,9 @@ jobs:
           cd os2
           curl -L -o fdd.zip %OS2_LINK%
           7z x fdd.zip -y > NUL
-          bin\oscript.bat -version
-          bin\oscript.bat lib\opm\src\cmd\opm.os install opm
-          bin\oscript.bat lib\opm\src\cmd\opm.os list
+          call bin\oscript.bat -version
+          call bin\oscript.bat lib\opm\src\cmd\opm.os install opm
+          call bin\oscript.bat lib\opm\src\cmd\opm.os list
           cd ..
 
       - name: Install OneScript 1.x
@@ -87,17 +87,17 @@ jobs:
           xcopy README.md oslib\ /Y
 
           cd oslib
-          ..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os build .
+          call ..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os build .
           cd ..
 
       - name: Test (OneScript 2.x)
         shell: cmd
         run: |
           cd oslib
-          for %%X in (*.ospx) do (..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os install -f %%X)
+          for %%X in (*.ospx) do (call ..\os2\bin\oscript.bat ..\os2\lib\opm\src\cmd\opm.os install -f %%X)
           cd ..
           set OSLIB_LOADER_TRACE=1
-          os2\bin\oscript.bat testcomponent.os
+          call os2\bin\oscript.bat testcomponent.os
 
       - name: Test (OneScript 1.x)
         shell: cmd
