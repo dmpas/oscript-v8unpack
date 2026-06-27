@@ -113,6 +113,7 @@ jobs:
         with:
           name: v8unpack
           path: oslib/*.ospx
+          archive: false
 
       - name: Upload components artifact
         uses: actions/upload-artifact@v4
