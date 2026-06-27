@@ -113,14 +113,14 @@ jobs:
           os1\bin\oscript.exe testcomponent.os
 
       - name: Upload ospx artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: v8unpack
           path: oslib/*.ospx
           archive: false
 
       - name: Upload components artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: components
           path: oslib/Components/dotnet/*.dll
