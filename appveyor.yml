@@ -1,7 +1,9 @@
-version: 1.0.8-{build}
+version: 1.0.9-{build}
 image: Visual Studio 2022
 environment:
   main_project: v8unpack
+  os1_link: https://oscript.io/downloads/1_9_4/x64/OneScript-1.9.4-x64.zip
+  os2_link: https://oscript.io/downloads/latest/OneScript-2.1.0-fdd-x64.zip
 before_build:
 - ps: nuget restore
 init:
@@ -15,7 +17,7 @@ install:
 
     cd os2
 
-    appveyor DownloadFile https://oscript.io/downloads/night-build/OneScript-2.0.0-rc.7+599-fdd-x64.zip -FileName fdd.zip
+    appveyor DownloadFile %os2_link% -FileName fdd.zip
 
     7z x fdd.zip > NUL
     
@@ -30,9 +32,9 @@ install:
 
     cd os1
 
-    appveyor DownloadFile https://oscript.io/downloads/latest/zip -FileName latest.zip
+    appveyor DownloadFile %os1_link% -FileName os1.zip
 
-    7z x latest.zip > NUL
+    7z x os1.zip > NUL
     
     bin\oscript.exe -version
 
@@ -50,7 +52,7 @@ build:
   verbosity: minimal
 configuration: Release
 test_script:
-- cmd: nunit3-console NUnitTests\bin\%CONFIGURATION%\net6.0\NUnitTests.dll --result=myresults.xml;format=AppVeyor
+- cmd: nunit3-console NUnitTests\bin\%CONFIGURATION%\net8.0\NUnitTests.dll --result=myresults.xml;format=AppVeyor
 - cmd: >-
     set OSLIB_LOADER_TRACE=1
     
@@ -64,21 +66,17 @@ test_script:
 after_build:
 - cmd: >-
 
-    del %main_project%\bin\%CONFIGURATION%\net6.0\*.pdb
+    del %main_project%\bin\%CONFIGURATION%\net8.0\*.pdb
     
-    mkdir oslib\Components
-
     mkdir oslib\Components\dotnet
-    
-    mkdir oslib\Components\net4
 
-    OneScriptDocumenter.exe json oslib\Components\dotnet\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net6.0\1script_%main_project%.dll
+    OneScriptDocumenter.exe json oslib\Components\dotnet\syntaxHelp.json %main_project%\bin\%CONFIGURATION%\net8.0\1script_%main_project%.dll
     
-    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net6.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net6.0\DotNetZip*.*
+    del %main_project%\bin\%CONFIGURATION%\ScriptEngine*.* %main_project%\bin\%CONFIGURATION%\net8.0\NewtonSoft*.* %main_project%\bin\%CONFIGURATION%\net8.0\DotNetZip*.*
     
-    xcopy %main_project%\bin\%CONFIGURATION%\net6.0\* oslib\Components\dotnet\
+    xcopy %main_project%\bin\%CONFIGURATION%\net8.0\* oslib\Components\dotnet\
     
-    xcopy assets\1script_v8unpack.dll oslib\Components\net4\
+    xcopy README.md oslib\
     
     cd oslib
 

@@ -7,7 +7,6 @@ at http://mozilla.org/MPL/2.0/.
 using System;
 using OneScript.StandardLibrary;
 using ScriptEngine.HostedScript;
-using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Hosting;
 
 namespace TestApp
